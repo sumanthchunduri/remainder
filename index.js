@@ -86,7 +86,7 @@ const task2 = cron.schedule("30 10 * * 1-5", function () {
 
 
 app.get("/", (req, res) => {
-  res.json({ msg: "pass" })
+  res.json({ status: "running" })
 })
 
 
