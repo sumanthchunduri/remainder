@@ -1,59 +1,32 @@
 const express = require("express");
 const cron = require("node-cron");
 const nodemailer = require("nodemailer");
+require('dotenv').config();
+const CyclicDB = require('cyclic-dynamodb');
+const db = CyclicDB(process.env.idCyclicDB);
 
 const app = express();
 
+let collect = db.collection('reminders')
 
-const dat = new Date();
-
-
-const usersTimesheet = [
-  {
-    name:"Sumanth",
-    email: "sumanthchunduri123@gmail.com",
-    task: "timesheet"
-  },
-  {
-    name: "Sandeep",
-    email: "180031046cse@gmail.com",
-    task: "timesheet"
-  }
-]
-
-const usersOffice = [
-  {
-    name:"Gopi",
-    email: "180030739cse@gmail.com",
-    task: "office mail to supervisor and time sheet"
-  }
-]
-
-function mailSender() {
-  for (let x in usersTimesheet) {
-    mailService(usersTimesheet[x]);
-  }
+async function mailSender() {
+  let item = await collect.get('timesheet')
+  mailService(item.props.email);
 }
 
-function mailOffice() {
-  for (let x in usersOffice) {
-    mailService(usersOffice[x]);
-  }
-}
-
-function mailService(user) {
+async function mailService(email) {
   let mailTransporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "180040097ece@gmail.com",
+      user: process.env.email,
       pass: process.env.password,
     },
   });
   let mailDetails = {
-    from: "180040097ece@gmail.com",
-    to: user.email,
-    subject: `${user.task} remainder`,
-    text: `Hi ${user.name} this is a remainder for ${user.task} for date ${dat.getDate()}`,
+    from: process.env.email,
+    to: email,
+    subject: `timesheet remainder`,
+    text: `Hi this is a remainder for timesheet for today`,
   };
 
   // sending email
@@ -64,39 +37,32 @@ function mailService(user) {
       console.log("email sent successfully");
     }
   });
+
+  let leo = await animals.set('status', {
+    lastrun: Date.now(),
+  })
 }
 
 
 const task1 = cron.schedule("30 7 * * 1-5", function () {
-  console.log(`message`);
   mailSender();
-  console.log(`sent`);
 }, {
   scheduled:true,
   timezone: "Asia/Kolkata"
 });
 
-const task2 = cron.schedule("30 10 * * 1-5", function () {
-  mailOffice();
-  console.log(`mail sent to gopi`);
-}, {
-  scheduled:true,
-  timezone: "Asia/Kolkata"
-});
-
-
-app.get("/", (req, res) => {
-  res.json({ status: "running" })
+app.get("/", async (req, res) => {
+  let item = await collect.get('status')
+  res.json({ "last-run": item.props.updated })
 })
 
 
 task1.start();
-task2.start();
+
 
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`running`);
-}
-)
+})
