@@ -53,7 +53,8 @@ const task1 = cron.schedule("30 7 * * 1-5", function () {
 
 app.get("/", async (req, res) => {
   let item = await collect.get('status')
-  res.json({ "last-run": item.props.updated })
+  let date = new Date(item.props.updated);
+  res.json({ "last-run": date.toDateString()})
 })
 
 
