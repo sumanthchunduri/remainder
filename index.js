@@ -38,7 +38,7 @@ async function mailService(email) {
     }
   });
 
-  let leo = await animals.set('status', {
+  let leo = await collect.set('status', {
     lastrun: Date.now(),
   })
 }
@@ -57,7 +57,17 @@ app.get("/", async (req, res) => {
   res.json({ "last-run": date.toDateString()})
 })
 
-
+app.get("/run", (req, res) => {
+  const d = new Date();
+  let hour = d.getHours();
+  let min = d.getMinutes();
+  if(hour === 7 && min <= 31) {
+    mailSender();
+    res.json({"status": "cron runned"});
+    return;
+  }
+  res.json({"status": "running"});
+})
 task1.start();
 
 
