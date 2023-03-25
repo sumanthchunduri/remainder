@@ -58,15 +58,8 @@ app.get("/", async (req, res) => {
 })
 
 app.get("/run", (req, res) => {
-  const d = new Date();
-  let hour = d.getHours();
-  let min = d.getMinutes();
-  if(hour === 7 && min <= 31) {
-    mailSender();
-    res.json({"status": "cron runned"});
-    return;
-  }
-  res.json({"status": "running"});
+  mailSender();
+  res.json({"status": "cron runned"});
 })
 task1.start();
 
