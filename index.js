@@ -1,9 +1,11 @@
 const express = require("express");
 const cron = require("node-cron");
 const nodemailer = require("nodemailer");
+const path = require('path');
 require('dotenv').config();
 const CyclicDB = require('cyclic-dynamodb');
 const db = CyclicDB(process.env.idCyclicDB);
+
 
 const app = express();
 
@@ -61,6 +63,11 @@ app.get("/run", (req, res) => {
   mailSender();
   res.json({"status": "cron runned"});
 })
+
+app.get("/kings-206-faqs", (req, res) => {
+  res.sendFile(path.join(__dirname, '/faqs.html'));
+})
+
 task1.start();
 
 
