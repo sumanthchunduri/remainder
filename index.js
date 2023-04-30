@@ -19,6 +19,7 @@ async function mailSender() {
 }
 
 async function mailService(email) {
+  console.log('started');
   let mailTransporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -45,6 +46,7 @@ async function mailService(email) {
   let leo = await collect.set('status', {
     lastrun: Date.now(),
   })
+  console.log('completed');
 }
 
 
@@ -61,8 +63,9 @@ app.get("/", async (req, res) => {
   res.json({ "last-run": date.toDateString()})
 })
 
-app.get("/run", (req, res) => {
-  mailSender();
+app.get("/run", async (req, res) => {
+  let details = await collect.get('timesheet')
+  mailService(details.props.email);
   res.json({"status": "cron runned"});
 })
 
