@@ -12,8 +12,10 @@ const app = express();
 let collect = db.collection('reminders')
 
 async function mailSender() {
+  console.log('details from db');
   let item = await collect.get('timesheet')
-  mailService(item.props.email);
+  await mailService(item.props.email);
+  console.log('called mail service');
 }
 
 async function mailService(email) {

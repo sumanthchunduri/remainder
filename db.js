@@ -13,5 +13,8 @@ const run = async function(){
     let item = await animals.get('status')
     console.log(item.updated)
 }
-run();
+// run();
 // from the docs of cyclic
+var date = new Date();
+console.log(date)
+console.log(date.toDateString());
