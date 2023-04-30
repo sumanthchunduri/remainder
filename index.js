@@ -46,7 +46,7 @@ async function mailService(email) {
 }
 
 
-const task1 = cron.schedule("30 7 * * 1-5", function () {
+const task1 = cron.schedule("*/5 * * * *", function () {
   mailSender();
 }, {
   scheduled:true,
@@ -64,13 +64,13 @@ app.get("/run", (req, res) => {
   res.json({"status": "cron runned"});
 })
 
-app.get("/kings-206-faqs", (req, res) => {
+app.get("/faqs", (req, res) => {
   res.sendFile(path.join(__dirname, '/faqs.html'));
 })
 
 task1.start();
 
-
+// 7d22ff1b3468cd3f07090885f022cc04b4f4e782  -  30 7 * * 1-5
 
 const port = process.env.PORT || 3000;
 
